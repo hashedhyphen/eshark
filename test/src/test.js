@@ -1,4 +1,11 @@
 import eshark from '../../bin/index.js';
 
-let file_name = '../log.pcapng';
-let buf = eshark(file_name);
+let file_path = process.argv[2];
+
+eshark(file_path).then((buf) => {
+  console.log('resolved:');
+  console.log(buf);
+}).catch((err) => {
+  console.error('error:');
+  console.error(err);
+});

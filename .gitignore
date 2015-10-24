@@ -1,3 +1,4 @@
 *.pcap
 *.pcapng
+*.eslintrc
 node_modules/
