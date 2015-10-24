@@ -1,7 +1,4 @@
 import eshark from '../../bin/index.js';
 
-if (eshark() == 1) {
-  console.log('passed');
-} else {
-  console.log('failed: ', eshark());
-}
+let file_name = '../log.pcapng';
+let buf = eshark(file_name);

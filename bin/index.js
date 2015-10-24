@@ -1,11 +1,20 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, '__esModule', {
   value: true
 });
 
-exports["default"] = function () {
-  return 1;
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _fs = require('fs');
+
+var _fs2 = _interopRequireDefault(_fs);
+
+exports['default'] = function (file_name) {
+  _fs2['default'].readFile(file_name, function (err, buf) {
+    if (err) console.error(err);
+    return console.log(buf);
+  });
 };
 
-module.exports = exports["default"];
+module.exports = exports['default'];

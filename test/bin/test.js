@@ -6,8 +6,6 @@ var _binIndexJs = require('../../bin/index.js');
 
 var _binIndexJs2 = _interopRequireDefault(_binIndexJs);
 
-if ((0, _binIndexJs2['default'])() == 1) {
-  console.log('passed');
-} else {
-  console.log('failed: ', (0, _binIndexJs2['default'])());
-}
+var file_name = '../log.pcapng';
+var buf = (0, _binIndexJs2['default'])(file_name);
+console.log(buf);
