@@ -23,17 +23,23 @@ var PcapngParser = (function () {
     }
   }
 
-  //return parser.parseBlock(reader, []);
-
   _createClass(PcapngParser, [{
+    key: 'parse',
+    value: function parse() {
+      return this.parseBlock();
+    }
+  }, {
     key: 'parseBlock',
-    value: function parseBlock(reader, arr) {
-      while (reader.length > 0) {
-        switch (reader.readUInt32()) {
+    value: function parseBlock() {
+      var arr = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
+
+      while (this.buf.length > 0) {
+        var block_type = this.buf.readUInt32LE();
+        switch (block_type) {
           case 0x0a0d0d0a:
-            return this.sectionHeader(reader, arr);
+            return this.sectionHeader(arr);
           case 0x00000001:
-            return this.interfaceDescription(reader, arr);
+            return this.interfaceDescription(arr);
           default:
           // skip();
         }
@@ -42,81 +48,90 @@ var PcapngParser = (function () {
     }
   }, {
     key: 'sectionHeader',
-    value: function sectionHeader(reader, arr) {
-      var block_len = reader.readUInt32(4),
-          cur_block = reader.slice(0, block_len);
+    value: function sectionHeader(arr) {
+      var block_len = this.buf.readUInt32LE(4),
+          cur_block = this.buf.slice(0, block_len),
+          trailer = cur_block.readUInt32LE(cur_block.length - 4);
 
-      if (block_len !== cur_block.readUInt32(-4)) throw { msg: 'imcompatible block length' };
+      if (block_len !== trailer) {
+        throw { msg: 'imcompatible block length' };
+      }
 
-      var major_ver = cur_block.readUInt16(12),
-          minor_ver = cur_block.readUInt16(14);
+      var major_ver = cur_block.readUInt16LE(12),
+          minor_ver = cur_block.readUInt16LE(14),
+          map = new Map([[1, { name: 'Comment', type: 'utf8' }], [2, { name: 'Hardware', type: 'utf8' }], [3, { name: 'OS', type: 'utf8' }], [4, { name: 'Application', type: 'utf8' }]]);
 
       arr.push({
         block_type: 'Section Header',
         version: major_ver + '.' + minor_ver,
-        options: this.getOptions(cur_block.slice(24, -4), {}, getMap())
+        options: this.getOptions(cur_block.slice(24, -4), map)
       });
-      reader = reader.slice(block_len);
-      return this.parseBlock(reader, arr);
 
-      function getMap() {
-        var table = [[1, { name: 'Comment', type: 'utf8' }], [2, { name: 'Hardware', type: 'utf8' }], [3, { name: 'OS', type: 'utf8' }], [4, { name: 'Application', type: 'utf8' }]];
-        return new Map(table);
-      }
+      this.buf = this.buf.slice(block_len);
+      return this.parseBlock(arr);
     }
   }, {
     key: 'interfaceDescription',
-    value: function interfaceDescription(reader, arr) {
-      var block_len = reader.readUInt32(4),
-          cur_block = reader.slice(0, block_len);
+    value: function interfaceDescription(arr) {
+      var block_len = this.buf.readUInt32LE(4),
+          cur_block = this.buf.slice(0, block_len),
+          trailer = cur_block.readUInt32LE(block_len - 4);
 
-      if (block_len !== cur_block.readUInt32(-4)) throw { msg: 'imcompatible block length' };
+      if (block_len !== trailer) {
+        throw { msg: 'imcompatible block length' };
+      }
 
-      var link_type = cur_block.readUInt16(8),
-          snap_len = cur_block.readUInt32(12);
+      var link_type = cur_block.readUInt16LE(8),
+          snap_len = cur_block.readUInt32LE(12),
+          map = new Map([[1, { name: 'Comment', type: 'utf8' }], [2, { name: 'Device', type: 'utf8' }], [9, { name: 'Resolution', type: 'uint8' }], [12, { name: 'OS', type: 'utf8' }]]);
 
       arr.push({
         block_type: 'Interface Description',
         link_type: link_type,
-        options: this.getOptions(cur_block.slice(16, -4), getMap())
+        options: this.getOptions(cur_block.slice(16, -4), map)
       });
-      reader = reader.slice(block_len);
-      return arr; //this.parseBlock(reader, arr);
 
-      function getMap() {
-        var table = [[1, { name: 'Comment', type: 'utf8' }], [2, { name: 'Device', type: 'utf8' }], [9, { name: 'Resolution', type: 'uint8' }], [12, { name: 'OS', type: 'utf8' }]];
-        return new Map(table);
-      }
+      this.buf = this.buf.slice(block_len);
+      return arr; //this.parseBlock(reader, arr);
     }
   }, {
     key: 'getOptions',
-    value: function getOptions(reader, container, map) {
-      var code = reader.readUInt16(0);
+    value: function getOptions(sub_buf, map) {
+      var container = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
+      var code = sub_buf.readUInt16LE(0);
 
       if (code === 0) {
-        if (reader.length === 4) return container;
-        throw { msg: 'options not terminated' };
+        if (sub_buf.length === 4) {
+          return container;
+        } else {
+          throw { msg: 'options not terminated' };
+        }
       }
 
-      var option_len = reader.readUInt16(2),
+      var option_len = sub_buf.readUInt16LE(2),
           padding_len = option_len % 4 === 0 ? 0 : 4 - option_len % 4,
           name = map.get(code) ? map.get(code).name : 'unknown',
           type = map.get(code) ? map.get(code).type : null,
           value = undefined;
 
-      if (type === 'utf8') {
-        value = reader.toString('utf8', 4, 4 + option_len);
-      } else if (type === 'hex') {
-        value = reader.toString('hex', 4, 4 + option_len);
-      } else if (type === 'uint8') {
-        value = reader.readUInt8(4);
-      } else {
-        value = reader.toString('utf8', 4, 4 + option_len);
+      switch (type) {
+        case 'uint8':
+          value = sub_buf.readUInt8(4);
+          break;
+        case 'utf8':
+          value = sub_buf.toString('utf8', 4, 4 + option_len);
+          break;
+        case 'hex':
+          value = sub_buf.toString('hex', 4, 4 + option_len);
+          break;
+        default:
+          value = sub_buf.toString('utf8', 4, 4 + option_len);
       }
-
       container[name] = value;
-      reader = reader.slice(4 + option_len + padding_len);
-      return this.getOptions(reader, container, map);
+
+      sub_buf = sub_buf.slice(4 + option_len + padding_len);
+      return this.getOptions(sub_buf, map, container);
     }
   }]);
 

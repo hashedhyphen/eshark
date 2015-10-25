@@ -1,21 +1,21 @@
 import fs from 'fs';
-import PcapngParser from './lib/pcapng_parser.js'
+import PcapngParser from './lib/pcapng_parser.js';
 
-let readFile = (file_path) => {
+let createParser = (file_path) => {
   return new Promise((resolve, reject) => {
     fs.readFile(file_path, (err, buf) => {
       if (err) { reject(err); }
-      else { resolve(buf); }
+      else { resolve(new PcapngParser(buf)); }
     });
   });
-}
+};
 
 export default (file_path) => {
   return new Promise((resolve, reject) => {
-    readFile(file_path).then((buf) => {
-      resolve(new PcapngParser(buf));
+    createParser(file_path).then((parser) => {
+      resolve(parser.parse());
     }).catch((err) => {
       reject(err);
     });
   });
-}
+};
