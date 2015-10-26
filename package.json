@@ -6,7 +6,7 @@
   "scripts": {
     "test": "gulp build-test && node test/bin/test.js test/log.pcapng",
     "build": "gulp build",
-    "lint": "eslint src/index.js && eslint src/lib/pcapng_parser.js && eslint test/src/test.js"
+    "lint": "eslint src && eslint test/src"
   },
   "author": "hashedhyphen",
   "license": "MIT",

@@ -107,7 +107,7 @@ class PcapngParser {
       throw { msg: 'imcompatible block length' };
 
     let link_type = cur_block.readUInt16(8)
-      , snap_len  = cur_block.readUInt32(12)
+      , snap_len  = cur_block.readUInt32(12);
 
     arr.push({
       block_type: 'Interface Description',

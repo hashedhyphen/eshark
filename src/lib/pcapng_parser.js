@@ -1,3 +1,5 @@
+import lh from './length_helper.js';
+
 export default class PcapngParser {
   constructor (buf) {
     this.buf = buf;
@@ -19,9 +21,12 @@ export default class PcapngParser {
           return this.sectionHeader(arr);
         case 0x00000001:
           return this.interfaceDescription(arr);
+        case 0x00000006:
+          return this.enhancedPacketBlock(arr);
         default:
           // skip();
       }
+      break;
     }
     return arr;
   }
@@ -79,7 +84,42 @@ export default class PcapngParser {
     });
 
     this.buf = this.buf.slice(block_len);
-    return arr;//this.parseBlock(reader, arr);
+    return this.parseBlock(arr);
+  }
+
+  enhancedPacketBlock (arr) {
+    let block_len = this.buf.readUInt32LE(4)
+      , cur_block = this.buf.slice(0, block_len)
+      , trailer   = cur_block.readUInt32LE(block_len - 4);
+
+    if (block_len !== trailer) {
+      throw { msg: 'imcompatible block length' };
+    }
+
+    let interface_id    = this.buf.readUInt32LE(8)
+      , timestamp_high  = this.buf.readUInt32LE(12)
+      , timestamp_low   = this.buf.readUInt32LE(16)
+      , captured_length = this.buf.readUInt32LE(20)
+      , packet_length   = this.buf.readUInt32LE(24)
+      , packet_data     = this.parsePacket(28, captured_length)
+      , map = new Map([
+          [1, { name: 'Comment', type: 'utf8' }],
+          [2, { name: 'Flags'  , type: 'uint32' }]
+        ]);
+
+    arr.push({
+      block_type: 'Enhanced Packet',
+      interface_id,
+      timestamp_high,
+      timestamp_low,
+      captured_length,
+      packet_length,
+      packet_data,
+      options: {}
+    });
+
+    this.buf = this.buf.slice(block_len);
+    return this.parseBlock(arr);
   }
 
   getOptions (sub_buf, map, container = {}) {
@@ -100,6 +140,9 @@ export default class PcapngParser {
       case 'uint8':
         value = sub_buf.readUInt8(4);
         break;
+      case 'uint32':
+        value = sub_buf.readUInt32LE(4);
+        break;
       case 'utf8':
         value = sub_buf.toString('utf8', 4, 4 + option_len);
         break;
@@ -113,5 +156,10 @@ export default class PcapngParser {
 
     sub_buf = sub_buf.slice(4 + option_len + padding_len);
     return this.getOptions(sub_buf, map, container);
+  }
+
+  parsePacket (start, cap_len) {
+    let packet = this.buf.slice(start, start + cap_len);
+    return packet.toString('hex');
   }
 }
