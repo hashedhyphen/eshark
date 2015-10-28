@@ -1,4 +1,4 @@
-import eshark from '../../bin/index.js';
+import eshark from '../../bin/router.js';
 
 let file_path = process.argv[2];
 

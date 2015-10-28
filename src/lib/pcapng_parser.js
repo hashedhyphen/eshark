@@ -1,5 +1,3 @@
-import lh from './length_helper.js';
-
 export default class PcapngParser {
   constructor (buf) {
     this.buf = buf;

@@ -2,7 +2,7 @@
   "name": "eshark",
   "version": "0.0.0",
   "description": "Serialize a pcap/pcapng file",
-  "main": "index.js",
+  "main": "src/router.js",
   "scripts": {
     "test": "gulp build-test && node test/bin/test.js test/log.pcapng",
     "build": "gulp build",
