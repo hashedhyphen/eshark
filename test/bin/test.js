@@ -12,6 +12,6 @@ var file_path = process.argv[2];
   console.log('resolved:');
   console.log(buf);
 })['catch'](function (err) {
-  console.error('error:');
+  console.error('rejected:');
   console.error(err);
 });

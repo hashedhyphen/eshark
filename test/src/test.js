@@ -6,6 +6,6 @@ eshark(file_path).then((buf) => {
   console.log('resolved:');
   console.log(buf);
 }).catch((err) => {
-  console.error('error:');
+  console.error('rejected:');
   console.error(err);
 });
