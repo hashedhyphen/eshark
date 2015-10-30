@@ -14,7 +14,8 @@ var BufferReader = (function () {
 
     this.buf = buf;
     this.type = type;
-    this.length = this.buf.length;
+    this.length = buf.length;
+    this.blocks = [];
     if (endian) {
       this.endian = endian;return this;
     }
@@ -37,8 +38,12 @@ var BufferReader = (function () {
 
   _createClass(BufferReader, [{
     key: 'toString',
-    value: function toString(args) {
-      return this.buf.toString.apply(this.buf, arguments);
+    value: function toString() {
+      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      return this.buf.toString.apply(this.buf, args);
     }
   }, {
     key: 'slice',

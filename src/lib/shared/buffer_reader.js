@@ -2,7 +2,8 @@ export default class BufferReader {
   constructor (buf, type, endian) {
     this.buf    = buf;
     this.type   = type;
-    this.length = this.buf.length;
+    this.length = buf.length;
+    this.blocks = [];
     if (endian) { this.endian = endian; return this; }
 
     let magic = '';
@@ -14,8 +15,8 @@ export default class BufferReader {
     else { throw new Error('unknown endian'); }
   }
 
-  toString (args) {
-    return this.buf.toString.apply(this.buf, arguments);
+  toString (...args) {
+    return this.buf.toString.apply(this.buf, args);
   }
 
   slice (start, end) {
