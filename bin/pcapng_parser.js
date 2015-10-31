@@ -10,9 +10,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'd
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-var _libShareBuffer_readerJs = require('./lib/share/buffer_reader.js');
+var _libSharedBuffer_readerJs = require('./lib/shared/buffer_reader.js');
 
-var _libShareBuffer_readerJs2 = _interopRequireDefault(_libShareBuffer_readerJs);
+var _libSharedBuffer_readerJs2 = _interopRequireDefault(_libSharedBuffer_readerJs);
 
 var _libPcapngSection_headerJs = require('./lib/pcapng/section_header.js');
 
@@ -26,11 +26,15 @@ var _libPcapngEnhanced_packetJs = require('./lib/pcapng/enhanced_packet.js');
 
 var _libPcapngEnhanced_packetJs2 = _interopRequireDefault(_libPcapngEnhanced_packetJs);
 
+var _libPcapngInterface_statisticsJs = require('./lib/pcapng/interface_statistics.js');
+
+var _libPcapngInterface_statisticsJs2 = _interopRequireDefault(_libPcapngInterface_statisticsJs);
+
 var PcapngParser = (function () {
   function PcapngParser(buf) {
     _classCallCheck(this, PcapngParser);
 
-    this.reader = new _libShareBuffer_readerJs2['default'](buf, 'pcapng');
+    this.reader = new _libSharedBuffer_readerJs2['default'](buf, 'pcapng');
   }
 
   _createClass(PcapngParser, [{
@@ -48,6 +52,9 @@ var PcapngParser = (function () {
             break;
           case 0x00000006:
             blocks.push((0, _libPcapngEnhanced_packetJs2['default'])(this.reader));
+            break;
+          case 0x00000005:
+            blocks.push((0, _libPcapngInterface_statisticsJs2['default'])(this.reader));
             break;
           default:
             console.log('unknown block_type ' + block_type);

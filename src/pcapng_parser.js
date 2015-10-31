@@ -1,7 +1,8 @@
-import BufferReader         from './lib/share/buffer_reader.js';
+import BufferReader         from './lib/shared/buffer_reader.js';
 import sectionHeader        from './lib/pcapng/section_header.js';
 import interfaceDescription from './lib/pcapng/interface_description.js';
 import enhancedPacket       from './lib/pcapng/enhanced_packet.js';
+import interfaceStatistics  from './lib/pcapng/interface_statistics.js';
 
 export default class PcapngParser {
   constructor (buf) {
@@ -21,6 +22,9 @@ export default class PcapngParser {
           break;
         case 0x00000006:
           blocks.push(enhancedPacket(this.reader));
+          break;
+        case 0x00000005:
+          blocks.push(interfaceStatistics(this.reader));
           break;
         default:
           console.log(`unknown block_type ${block_type}`);
