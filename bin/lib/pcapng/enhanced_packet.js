@@ -32,7 +32,7 @@ exports['default'] = function (reader) {
       captured_length = reader.readUInt32(20),
       packet_length = reader.readUInt32(24),
       packet_data = (0, _protocolParse_packetJs2['default'])(reader, 28, captured_length),
-      map = new Map([[1, { name: 'Comment', type: 'utf8' }], [2, { name: 'Flags', type: 'uint32' }]]);
+      map = new Map([[1, { name: 'Comment', type: 'utf8' }], [2, { name: 'Flags', type: 'uint32' }], [4, { name: 'Droped', type: 'uint64' }]]);
 
   var ret = {
     block_type: 'Enhanced Packet',

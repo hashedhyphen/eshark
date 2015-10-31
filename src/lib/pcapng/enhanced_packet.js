@@ -21,7 +21,8 @@ export default (reader) => {
     , packet_data     = parsePacket(reader, 28, captured_length)
     , map = new Map([
         [1, { name: 'Comment', type: 'utf8'   }],
-        [2, { name: 'Flags'  , type: 'uint32' }]
+        [2, { name: 'Flags'  , type: 'uint32' }],
+        [4, { name: 'Droped' , type: 'uint64' }]
       ]);
 
   let ret = {

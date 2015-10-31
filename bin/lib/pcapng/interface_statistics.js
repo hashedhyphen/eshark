@@ -25,7 +25,7 @@ exports['default'] = function (reader) {
   var interface_id = cur_block.readUInt32(8),
       timestamp_high = cur_block.readUInt32(12),
       timestamp_low = cur_block.readUInt32(16),
-      map = new Map([[1, { name: 'Comment', type: 'utf8' }], [2, { name: 'StartTime', type: 'utf8' }], [3, { name: 'EndTime', type: 'utf8' }], [4, { name: 'Recieved', type: 'utf8' }], [5, { name: 'DropedByIF', type: 'utf8' }], [6, { name: 'Accepted', type: 'utf8' }], [7, { name: 'DropedByOS', type: 'utf8' }], [8, { name: 'Delivered', type: 'utf8' }]]);
+      map = new Map([[1, { name: 'Comment', type: 'utf8' }], [2, { name: 'StartTime', type: 'uint64' }], [3, { name: 'EndTime', type: 'uint64' }], [4, { name: 'Recieved', type: 'uint64' }], [5, { name: 'DropedByIF', type: 'uint64' }], [6, { name: 'Accepted', type: 'uint64' }], [7, { name: 'DropedByOS', type: 'uint64' }], [8, { name: 'Delivered', type: 'uint64' }]]);
 
   var ret = {
     block_type: 'Interface Statistics',

@@ -15,10 +15,13 @@ export default (reader) => {
   let link_type = cur_block.readUInt16(8)
     , snap_len  = cur_block.readUInt32(12)
     , map = new Map([
-        [1,  { name: 'Comment',    type: 'utf8' }],
-        [2,  { name: 'Device' ,    type: 'utf8' }],
-        [9,  { name: 'Resolution', type: 'uint8'}],
-        [12, { name: 'OS',         type: 'utf8' }]
+        [1,  { name: 'Comment',    type: 'utf8'   }],
+        [2,  { name: 'Device' ,    type: 'utf8'   }],
+        [8,  { name: 'IFSpeed',    type: 'uint64' }],
+        [9,  { name: 'Resolution', type: 'uint8'  }],
+        [12, { name: 'OS',         type: 'utf8'   }],
+        [13, { name: 'FCSLength',  type: 'uint8'  }],
+        [14, { name: 'TSOffset' ,  type: 'uint64' }]
       ]);
 
   let ret = {

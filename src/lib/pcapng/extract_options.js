@@ -23,6 +23,9 @@ export default (reader, map) => {
       case 'uint32':
         value = reader.readUInt32(4);
         break;
+      case 'uint64':
+        value = `${reader.readUInt32(4)}${reader.readUInt32(8)}`;
+        break;
       case 'utf8':
         value = reader.toString('utf8', 4, 4 + option_len);
         break;
