@@ -4,7 +4,7 @@
   "description": "Serialize a pcap/pcapng file",
   "main": "src/router.js",
   "scripts": {
-    "test": "gulp build-test && node test/bin/test.js test/log.pcapng",
+    "test": "gulp build-test && node test/bin/packet_test.js",
     "build": "gulp build",
     "lint": "eslint src && eslint test/src"
   },
