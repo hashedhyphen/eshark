@@ -1,9 +1,9 @@
 import fs from 'fs';
 import BufferReader from '../../bin/lib/shared/buffer_reader.js';
-import udp          from '../../bin/lib/protocol/udp.js';
+import icmp         from '../../bin/lib/protocol/icmp.js';
 
-let file_path = 'test/udp.bin';
+let file_path = 'test/icmp_reply.bin';
 
 fs.readFile(file_path, (err, buf) => {
-  console.log(udp(new BufferReader(buf, 'pcapng', 'little')));
+  console.log(icmp(new BufferReader(buf, 'pcapng', 'little')));
 });
