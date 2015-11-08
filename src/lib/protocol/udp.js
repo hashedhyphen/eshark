@@ -1,7 +1,7 @@
 export default (reader) => {
   const HEADER_LEN_MIN = 8;
   if (reader.length < HEADER_LEN_MIN) {
-    throw new Error('too short length for Ethernet');
+    throw new Error('too short length for UDP');
   }
 
   let source      = reader.buf.readUInt16BE(0)

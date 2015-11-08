@@ -7,7 +7,7 @@ Object.defineProperty(exports, '__esModule', {
 exports['default'] = function (reader) {
   var HEADER_LEN_MIN = 20;
   if (reader.length < HEADER_LEN_MIN) {
-    throw new Error('too short length for Ethernet');
+    throw new Error('too short length for TCP');
   }
 
   var source = reader.buf.readUInt16BE(0),

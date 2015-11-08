@@ -1,7 +1,7 @@
 export default (reader) => {
   const HEADER_LEN_MIN = 20;
   if (reader.length < HEADER_LEN_MIN) {
-    throw new Error('too short length for Ethernet');
+    throw new Error('too short length for TCP');
   }
 
   let source      = reader.buf.readUInt16BE(0)
