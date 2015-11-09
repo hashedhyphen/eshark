@@ -1,15 +1,17 @@
 export default (reader) => {
-  const HEADER_LEN = 14;
-  if (reader.length < HEADER_LEN) {
-    throw new Error('too short length for Ethernet');
-  }
+  return new Promise((resolve, reject) => {
+    const HEADER_LEN = 14;
+    if (reader.length < HEADER_LEN) {
+      reject(Error('too short length for Ethernet'));
+    }
 
-  let destination = getMACAddress(reader, 0)
-    , source      = getMACAddress(reader, 6)
-    , ether_type  = ETHER_TYPES.get(reader.toString('hex', 12, 14))
-    , payload     = reader.length > HEADER_LEN ? reader.slice(14) : null;
+    let destination = getMACAddress(reader, 0)
+      , source      = getMACAddress(reader, 6)
+      , ether_type  = ETHER_TYPES.get(reader.toString('hex', 12, 14))
+      , payload     = reader.length > HEADER_LEN ? reader.slice(14) : null;
 
-  return { destination, source, ether_type, payload };
+    resolve({ destination, source, ether_type, payload });
+  });
 };
 
 let getMACAddress = (reader, start) => {

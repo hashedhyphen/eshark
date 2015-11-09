@@ -5,17 +5,19 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 exports.default = function (reader) {
-  var HEADER_LEN = 14;
-  if (reader.length < HEADER_LEN) {
-    throw new Error('too short length for Ethernet');
-  }
+  return new Promise(function (resolve, reject) {
+    var HEADER_LEN = 14;
+    if (reader.length < HEADER_LEN) {
+      reject(Error('too short length for Ethernet'));
+    }
 
-  var destination = getMACAddress(reader, 0),
-      source = getMACAddress(reader, 6),
-      ether_type = ETHER_TYPES.get(reader.toString('hex', 12, 14)),
-      payload = reader.length > HEADER_LEN ? reader.slice(14) : null;
+    var destination = getMACAddress(reader, 0),
+        source = getMACAddress(reader, 6),
+        ether_type = ETHER_TYPES.get(reader.toString('hex', 12, 14)),
+        payload = reader.length > HEADER_LEN ? reader.slice(14) : null;
 
-  return { destination: destination, source: source, ether_type: ether_type, payload: payload };
+    resolve({ destination: destination, source: source, ether_type: ether_type, payload: payload });
+  });
 };
 
 var getMACAddress = function getMACAddress(reader, start) {
