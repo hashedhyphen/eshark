@@ -1,23 +1,23 @@
-// Enhanced Packet Block (optional)
-// https://www.winpcap.org/ntar/draft/PCAP-DumpFileFormat.html#sectionepb
-
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+var _extract_options = require('./extract_options.js');
 
-var _extract_optionsJs = require('./extract_options.js');
+var _extract_options2 = _interopRequireDefault(_extract_options);
 
-var _extract_optionsJs2 = _interopRequireDefault(_extract_optionsJs);
+var _parse_packet = require('../protocol/parse_packet.js');
 
-var _protocolParse_packetJs = require('../protocol/parse_packet.js');
+var _parse_packet2 = _interopRequireDefault(_parse_packet);
 
-var _protocolParse_packetJs2 = _interopRequireDefault(_protocolParse_packetJs);
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports['default'] = function (reader) {
+// Enhanced Packet Block (optional)
+// https://www.winpcap.org/ntar/draft/PCAP-DumpFileFormat.html#sectionepb
+
+exports.default = function (reader) {
   var block_len = reader.readUInt32(4),
       cur_block = reader.slice(0, block_len),
       trailer = cur_block.readUInt32(block_len - 4);
@@ -31,7 +31,7 @@ exports['default'] = function (reader) {
       timestamp_low = reader.readUInt32(16),
       captured_length = reader.readUInt32(20),
       packet_length = reader.readUInt32(24),
-      packet_data = (0, _protocolParse_packetJs2['default'])(reader, 28, captured_length),
+      packet_data = (0, _parse_packet2.default)(reader, 28, captured_length),
       map = new Map([[1, { name: 'Comment', type: 'utf8' }], [2, { name: 'Flags', type: 'uint32' }], [4, { name: 'Droped', type: 'uint64' }]]);
 
   var ret = {
@@ -48,5 +48,3 @@ exports['default'] = function (reader) {
   reader.next(block_len);
   return ret;
 };
-
-module.exports = exports['default'];

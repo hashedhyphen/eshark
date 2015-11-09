@@ -1,10 +1,10 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-exports['default'] = function (reader) {
+exports.default = function (reader) {
   var HEADER_LEN_MIN = 8;
   if (reader.length < HEADER_LEN_MIN) {
     throw new Error('too short length for UDP');
@@ -18,5 +18,3 @@ exports['default'] = function (reader) {
 
   return { source: source, destination: destination, header_len: header_len, checksum: checksum, data: data };
 };
-
-module.exports = exports['default'];

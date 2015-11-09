@@ -1,10 +1,10 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-exports['default'] = function (reader) {
+exports.default = function (reader) {
   var HEADER_LEN = 14;
   if (reader.length < HEADER_LEN) {
     throw new Error('too short length for Ethernet');
@@ -38,8 +38,8 @@ var getMACAddress = function getMACAddress(reader, start) {
     _iteratorError = err;
   } finally {
     try {
-      if (!_iteratorNormalCompletion && _iterator['return']) {
-        _iterator['return']();
+      if (!_iteratorNormalCompletion && _iterator.return) {
+        _iterator.return();
       }
     } finally {
       if (_didIteratorError) {
@@ -52,4 +52,3 @@ var getMACAddress = function getMACAddress(reader, start) {
 };
 
 var ETHER_TYPES = new Map([['0800', 'Internet Protocol Version 4'], ['86dd', 'Internet Protocol Version 6']]);
-module.exports = exports['default'];

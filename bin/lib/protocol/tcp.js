@@ -1,10 +1,10 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-exports['default'] = function (reader) {
+exports.default = function (reader) {
   var HEADER_LEN_MIN = 20;
   if (reader.length < HEADER_LEN_MIN) {
     throw new Error('too short length for TCP');
@@ -33,4 +33,3 @@ var getTCPFlags = function getTCPFlags(bits) {
     syn: +!!(bits & 0x02), fin: +!!(bits & 0x01)
   };
 };
-module.exports = exports['default'];

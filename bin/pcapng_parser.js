@@ -1,40 +1,40 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+var _buffer_reader = require('./lib/shared/buffer_reader.js');
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+var _buffer_reader2 = _interopRequireDefault(_buffer_reader);
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+var _section_header = require('./lib/pcapng/section_header.js');
 
-var _libSharedBuffer_readerJs = require('./lib/shared/buffer_reader.js');
+var _section_header2 = _interopRequireDefault(_section_header);
 
-var _libSharedBuffer_readerJs2 = _interopRequireDefault(_libSharedBuffer_readerJs);
+var _interface_description = require('./lib/pcapng/interface_description.js');
 
-var _libPcapngSection_headerJs = require('./lib/pcapng/section_header.js');
+var _interface_description2 = _interopRequireDefault(_interface_description);
 
-var _libPcapngSection_headerJs2 = _interopRequireDefault(_libPcapngSection_headerJs);
+var _enhanced_packet = require('./lib/pcapng/enhanced_packet.js');
 
-var _libPcapngInterface_descriptionJs = require('./lib/pcapng/interface_description.js');
+var _enhanced_packet2 = _interopRequireDefault(_enhanced_packet);
 
-var _libPcapngInterface_descriptionJs2 = _interopRequireDefault(_libPcapngInterface_descriptionJs);
+var _interface_statistics = require('./lib/pcapng/interface_statistics.js');
 
-var _libPcapngEnhanced_packetJs = require('./lib/pcapng/enhanced_packet.js');
+var _interface_statistics2 = _interopRequireDefault(_interface_statistics);
 
-var _libPcapngEnhanced_packetJs2 = _interopRequireDefault(_libPcapngEnhanced_packetJs);
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var _libPcapngInterface_statisticsJs = require('./lib/pcapng/interface_statistics.js');
-
-var _libPcapngInterface_statisticsJs2 = _interopRequireDefault(_libPcapngInterface_statisticsJs);
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var PcapngParser = (function () {
   function PcapngParser(buf) {
     _classCallCheck(this, PcapngParser);
 
-    this.reader = new _libSharedBuffer_readerJs2['default'](buf, 'pcapng');
+    this.reader = new _buffer_reader2.default(buf, 'pcapng');
   }
 
   _createClass(PcapngParser, [{
@@ -45,16 +45,16 @@ var PcapngParser = (function () {
         var block_type = this.reader.readUInt32();
         switch (block_type) {
           case 0x0a0d0d0a:
-            blocks.push((0, _libPcapngSection_headerJs2['default'])(this.reader));
+            blocks.push((0, _section_header2.default)(this.reader));
             break;
           case 0x00000001:
-            blocks.push((0, _libPcapngInterface_descriptionJs2['default'])(this.reader));
+            blocks.push((0, _interface_description2.default)(this.reader));
             break;
           case 0x00000006:
-            blocks.push((0, _libPcapngEnhanced_packetJs2['default'])(this.reader));
+            blocks.push((0, _enhanced_packet2.default)(this.reader));
             break;
           case 0x00000005:
-            blocks.push((0, _libPcapngInterface_statisticsJs2['default'])(this.reader));
+            blocks.push((0, _interface_statistics2.default)(this.reader));
             break;
           default:
             console.log('unknown block_type ' + block_type);
@@ -68,5 +68,4 @@ var PcapngParser = (function () {
   return PcapngParser;
 })();
 
-exports['default'] = PcapngParser;
-module.exports = exports['default'];
+exports.default = PcapngParser;

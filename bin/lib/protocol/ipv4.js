@@ -1,19 +1,19 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', {
+Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-exports['default'] = function (reader) {
+exports.default = function (reader) {
   var HEADER_LEN = 20;
   if (reader.length < HEADER_LEN) {
     throw new Error('too short length for IPv4');
   }
 
   var version = reader.readUInt8(0) >>> 4,
-      ihl = (reader.readUInt8() & 0xf) * 4,
-      // in bytes
-  service = '0x' + reader.toString('hex', 1, 2),
+      ihl = (reader.readUInt8() & 0xf) * 4 // in bytes
+  ,
+      service = '0x' + reader.toString('hex', 1, 2),
       total_len = reader.readUInt16(3),
       id = '0x' + reader.toString('hex', 4, 6),
       flags = reader.readUInt8(6) >>> 5,
@@ -48,8 +48,8 @@ var getIPv4Address = function getIPv4Address(reader, start) {
     _iteratorError = err;
   } finally {
     try {
-      if (!_iteratorNormalCompletion && _iterator['return']) {
-        _iterator['return']();
+      if (!_iteratorNormalCompletion && _iterator.return) {
+        _iterator.return();
       }
     } finally {
       if (_didIteratorError) {
@@ -62,4 +62,3 @@ var getIPv4Address = function getIPv4Address(reader, start) {
 };
 
 var PROTOCOLS = new Map([[1, 'ICMP'], [6, 'TCP'], [17, 'UDP']]);
-module.exports = exports['default'];

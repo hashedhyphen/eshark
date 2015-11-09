@@ -10,7 +10,4 @@ var PcapParser = function PcapParser() {
   _classCallCheck(this, PcapParser);
 };
 
-exports["default"] = PcapParser;
-module.exports = exports["default"];
-
-//
+exports.default = PcapParser;
