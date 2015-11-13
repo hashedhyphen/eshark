@@ -25,13 +25,22 @@ var Ethernet = (function () {
             source = Ethernet.getMACAddress(reader, 6),
             ether_type = Ethernet.ETHER_TYPES.get(reader.readUInt16BE(12)),
             payload = reader.length > Ethernet.HEADER_LEN_MIN ? reader.slice(14) : null;
-        resolve({ destination: destination, source: source, ether_type: ether_type, payload: payload });
+
+        resolve({
+          core: {
+            destination: destination, source: source, ether_type: ether_type
+          },
+          next: {
+            protocol: ether_type,
+            payload: payload
+          }
+        });
       });
     }
   }, {
     key: 'getMACAddress',
-    value: function getMACAddress(reader, start) {
-      var chunk = reader.slice(start, start + 6),
+    value: function getMACAddress(reader, offset) {
+      var chunk = reader.slice(offset, offset + 6),
           bytes = [];
 
       var _iteratorNormalCompletion = true;
@@ -70,7 +79,7 @@ var Ethernet = (function () {
   }, {
     key: 'ETHER_TYPES',
     get: function get() {
-      return new Map([[0x0800, 'Internet Protocol Version 4'], [0x86dd, 'Internet Protocol Version 6']]);
+      return new Map([[0x0800, 'IPv4'], [0x86dd, 'IPv6']]);
     }
   }]);
 

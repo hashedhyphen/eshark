@@ -5,8 +5,8 @@ export default class Ethernet {
 
   static get ETHER_TYPES() {
     return new Map([
-      [0x0800, 'Internet Protocol Version 4'],
-      [0x86dd, 'Internet Protocol Version 6']
+      [0x0800, 'IPv4'],
+      [0x86dd, 'IPv6']
     ]);
   }
 
@@ -19,19 +19,29 @@ export default class Ethernet {
       let destination = Ethernet.getMACAddress(reader, 0)
         , source      = Ethernet.getMACAddress(reader, 6)
         , ether_type  = Ethernet.ETHER_TYPES.get(reader.readUInt16BE(12))
-        , payload     = reader.length > Ethernet.HEADER_LEN_MIN
-                        ? reader.slice(14) : null;
-      resolve({ destination, source, ether_type, payload });
+        , payload     = (reader.length > Ethernet.HEADER_LEN_MIN)
+                        ? reader.slice(14) : null
+        ;
+
+      resolve({
+        core: {
+          destination, source, ether_type
+        },
+        next: {
+          protocol: ether_type,
+          payload:  payload
+        }
+      });
     });
   }
 
-  static getMACAddress(reader, start) {
-    let chunk = reader.slice(start, start + 6)
+  static getMACAddress(reader, offset) {
+    let chunk = reader.slice(offset, offset + 6)
       , bytes = [];
 
     for (let b of chunk.values()) {
       let hex = b.toString(16);
-      bytes.push(b < 0x10 ? `0${hex}` : hex);
+      bytes.push((b < 0x10) ? `0${hex}` : hex);
     }
 
     return bytes.join(':');

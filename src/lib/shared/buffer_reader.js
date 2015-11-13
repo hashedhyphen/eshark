@@ -10,7 +10,7 @@ export default class BufferReader {
     return this.buf.length;
   }
 
-  toString(args) {
+  toString(/*args*/) {
     return Buffer.prototype.toString.apply(this.buf, arguments);
   }
 
@@ -73,9 +73,7 @@ export default class BufferReader {
   }
 }
 
-
 // Helpers
-
 function getEndian(buf, format) {
   let magic = '';
        if (format === 'pcapng') { magic = buf.toString('hex', 8, 12); }

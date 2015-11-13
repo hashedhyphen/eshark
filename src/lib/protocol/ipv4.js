@@ -1,41 +1,56 @@
-export default (reader) => {
-  return new Promise((resolve, reject) => {
-    const HEADER_LEN = 20;
-    if (reader.length < HEADER_LEN) {
-      reject(new Error('too short length for IPv4'));
-    }
+export default class IPv4 {
+  static get HEADER_LEN_MIN() {
+    return 20;
+  }
 
-    let version     = reader.readUInt8(0) >>> 4
-      , ihl         = (reader.readUInt8() & 0xf) * 4  // in bytes
-      , service     = `0x${reader.toString('hex', 1, 2)}`
-      , total_len   = reader.readUInt16(3)
-      , id          = `0x${reader.toString('hex', 4, 6)}`
-      , flags       = reader.readUInt8(6) >>> 5
-      , offset      = (reader.readUInt8(6)&0x1)*0x100 + reader.readUInt8(7)
-      , ttl         = reader.readUInt8(8)
-      , protocol    = PROTOCOLS.get(reader.readUInt8(9))
-      , checksum    = `0x${reader.toString('hex', 10, 12)}`
-      , source      = getIPv4Address(reader, 12)
-      , destination = getIPv4Address(reader, 16)
-      , payload     = reader.length > HEADER_LEN ? reader.slice(ihl) : null;
+  static get PROTOCOLS() {
+    return new Map([
+      [1,  'ICMP'],
+      [6,  'TCP' ],
+      [17, 'UDP' ]
+    ]);
+  }
 
+  static parse(reader) {
+    return new Promise((resolve, reject) => {
+      if (reader.length < IPv4.HEADER_LEN_MIN) {
+        reject(new Error('too short length for IPv4'));
+      }
 
-    resolve({ version, ihl, service, total_len, id,
-             flags, offset, ttl, protocol, checksum,
-             source, destination, payload });
-  });
-};
+      let version     = reader.readUInt8(0) >>> 4
+        , ihl         = (reader.readUInt8() & 0xf) * 4  // in bytes
+        , service     = `0x${reader.toString('hex', 1, 2)}`
+        , total_len   = reader.readUInt16BE(3)
+        , id          = `0x${reader.toString('hex', 4, 6)}`
+        , flags       = reader.readUInt8(6) >>> 5
+        , offset      = (reader.readUInt8(6)&0x1)*0x100 + reader.readUInt8(7)
+        , ttl         = reader.readUInt8(8)
+        , protocol    = IPv4.PROTOCOLS.get(reader.readUInt8(9))
+        , checksum    = `0x${reader.toString('hex', 10, 12)}`
+        , source      = IPv4.getIPv4Address(reader, 12)
+        , destination = IPv4.getIPv4Address(reader, 16)
+        , payload     = (reader.length > IPv4.HEADER_LEN_MIN)
+                        ? reader.slice(ihl) : null
+        ;
 
-let getIPv4Address = (reader, start) => {
-  let chunk = reader.buf.slice(start, start + 4)
-    , bytes = [];
+      resolve({
+        core: {
+          version, ihl, service, total_len, id, flags, offset,
+          ttl, protocol, checksum, source, destination
+        },
+        next: {
+          protocol: protocol,
+          payload:  payload
+        }
+      });
+    });
+  }
 
-  for (let b of chunk) { bytes.push(b); }
-  return bytes.join('.');
-};
+  static getIPv4Address(reader, offset) {
+    let chunk = reader.buf.slice(offset, offset + 4)
+      , bytes = [];
 
-const PROTOCOLS = new Map([
-  [1,  'ICMP'],
-  [6,  'TCP' ],
-  [17, 'UDP' ]
-]);
+    for (let b of chunk.values()) { bytes.push(b); }
+    return bytes.join('.');
+  }
+}

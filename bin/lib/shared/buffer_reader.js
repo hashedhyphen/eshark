@@ -21,7 +21,7 @@ var BufferReader = (function () {
 
   _createClass(BufferReader, [{
     key: 'toString',
-    value: function toString(args) {
+    value: function toString() /*args*/{
       return Buffer.prototype.toString.apply(this.buf, arguments);
     }
   }, {
