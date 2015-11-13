@@ -35,7 +35,7 @@ var PacketParser = (function () {
             while (1) switch (_context.prev = _context.next) {
               case 0:
                 _context.next = 2;
-                return new _ethernet2.default(reader).parse();
+                return _ethernet2.default.parse(reader);
 
               case 2:
                 ethernet = _context.sent;

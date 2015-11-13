@@ -8,101 +8,125 @@ Object.defineProperty(exports, "__esModule", {
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+// Unable to extend Buffer...
+
 var BufferReader = (function () {
-  function BufferReader(buf, type, endian) {
+  function BufferReader(buf, format, endian) {
     _classCallCheck(this, BufferReader);
 
     this.buf = buf;
-    this.type = type;
-    this.length = buf.length;
-    this.blocks = [];
-    if (endian) {
-      this.endian = endian;return this;
-    }
-
-    var magic = '';
-    if (type === 'pcapng') {
-      magic = buf.toString('hex', 8, 12);
-    } else if (type === 'pcap') {
-      magic = buf.toString('hex', 0, 4);
-    }
-
-    if (magic === '4d3c2b1a') {
-      this.endian = 'little';
-    } else if (magic === '1a2b3c4d') {
-      this.endian = 'big';
-    } else {
-      throw new Error('unknown endian');
-    }
+    this.format = format;
+    this.endian = endian || getEndian(buf, format);
   }
 
   _createClass(BufferReader, [{
     key: 'toString',
-    value: function toString() {
-      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-        args[_key] = arguments[_key];
-      }
-
-      return this.buf.toString.apply(this.buf, args);
+    value: function toString(args) {
+      return Buffer.prototype.toString.apply(this.buf, arguments);
     }
   }, {
     key: 'slice',
     value: function slice(start, end) {
-      return new BufferReader(this.buf.slice(start, end), this.type, this.endian);
-    }
-  }, {
-    key: 'next',
-    value: function next(skip_len) {
-      this.buf = this.buf.slice(skip_len);
-      this.length = this.buf.length;
+      return new BufferReader(this.buf.slice(start, end), this.format, this.endian);
     }
   }, {
     key: 'readUInt8',
     value: function readUInt8(offset) {
-      return this.buf.readUInt8(offset);
+      return callMethod(this.buf, 'readUInt8', offset);
     }
   }, {
-    key: 'readUInt16',
-    value: function readUInt16(offset) {
-      return this.callMethod('readUInt16', offset);
+    key: 'readUInt16BE',
+    value: function readUInt16BE(offset) {
+      return callMethod(this.buf, 'readUInt16BE', offset);
     }
   }, {
-    key: 'readUInt32',
-    value: function readUInt32(offset) {
-      return this.callMethod('readUInt32', offset);
+    key: 'readUInt16LE',
+    value: function readUInt16LE(offset) {
+      return callMethod(this.buf, 'readUInt16LE', offset);
+    }
+  }, {
+    key: 'readUInt32BE',
+    value: function readUInt32BE(offset) {
+      return callMethod(this.buf, 'readUInt32BE', offset);
+    }
+  }, {
+    key: 'readUInt32LE',
+    value: function readUInt32LE(offset) {
+      return callMethod(this.buf, 'readUInt32LE', offset);
     }
   }, {
     key: 'readInt8',
     value: function readInt8(offset) {
-      return this.buf.readInt8(offset);
+      return callMethod(this.buf, 'readInt8', offset);
     }
   }, {
-    key: 'readInt16',
-    value: function readInt16(offset) {
-      return this.callMethod('readInt16', offset);
+    key: 'readInt16BE',
+    value: function readInt16BE(offset) {
+      return callMethod(this.buf, 'readInt16BE', offset);
     }
   }, {
-    key: 'readInt32',
-    value: function readInt32(offset) {
-      return this.callMethod('readInt32', offset);
+    key: 'readInt16LE',
+    value: function readInt16LE(offset) {
+      return callMethod(this.buf, 'readInt16LE', offset);
     }
   }, {
-    key: 'callMethod',
-    value: function callMethod(prefix, offset) {
-      if (offset && offset < 0) {
-        offset += this.length;
-      }
-      if (this.endian === 'little') {
-        return this.buf[prefix + 'LE'](offset);
-      }
-      if (this.endian === 'big') {
-        return this.buf[prefix + 'BE'](offset);
-      }
-      throw new Error('invalid endian');
+    key: 'readInt32BE',
+    value: function readInt32BE(offset) {
+      return callMethod(this.buf, 'readInt32BE', offset);
+    }
+  }, {
+    key: 'readInt32LE',
+    value: function readInt32LE(offset) {
+      return callMethod(this.buf, 'readInt32LE', offset);
+    }
+  }, {
+    key: 'values',
+    value: function values() {
+      return this.buf.values();
+    }
+  }, {
+    key: 'keys',
+    value: function keys() {
+      return this.buf.keys();
+    }
+  }, {
+    key: 'entries',
+    value: function entries() {
+      return this.buf.entries();
+    }
+  }, {
+    key: 'length',
+    get: function get() {
+      return this.buf.length;
     }
   }]);
 
   return BufferReader;
 })();
 
+// Helpers
+
 exports.default = BufferReader;
+function getEndian(buf, format) {
+  var magic = '';
+  if (format === 'pcapng') {
+    magic = buf.toString('hex', 8, 12);
+  } else if (format === 'pcap') {
+    magic = buf.toString('hex', 0, 4);
+  }
+
+  if (magic === '4d3c2b1a') {
+    return 'little';
+  } else if (magic === '1a2b3c4d') {
+    return 'big';
+  } else {
+    throw new Error('unknown endian');
+  }
+}
+
+function callMethod(buf, prefix, offset) {
+  if (offset && offset < 0) {
+    offset += this.length;
+  }
+  return buf[prefix](offset);
+}
