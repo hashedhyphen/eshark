@@ -71,7 +71,7 @@ var PacketParser = (function () {
                   spec: result.core
                 });
 
-                if (!result.next.protocol) {
+                if (!PARSERS.get(result.next.protocol)) {
                   _context.next = 10;
                   break;
                 }
@@ -83,7 +83,7 @@ var PacketParser = (function () {
               case 10:
 
                 results.push({
-                  type: 'data',
+                  type: result.next.protocol || 'data',
                   spec: result.next.payload.toString('hex')
                 });
                 return _context.abrupt('break', 14);

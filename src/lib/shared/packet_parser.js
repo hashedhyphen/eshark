@@ -28,14 +28,14 @@ export default class PacketParser {
           spec: result.core
         });
 
-        if (result.next.protocol) {
+        if (PARSERS.get(result.next.protocol)) {
           protocol = result.next.protocol;
           payload  = result.next.payload;
           continue;
         }
 
         results.push({
-          type: 'data',
+          type: result.next.protocol || 'data',
           spec: result.next.payload.toString('hex')
         });
         break;

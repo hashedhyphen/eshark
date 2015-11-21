@@ -3,6 +3,13 @@ export default class TCP {
     return 20;
   }
 
+  static get WELL_KNOWN_PORTS() {
+    return new Map([
+      [ 80, 'HTTP' ],
+      [443, 'HTTPS']
+    ]);
+  }
+
   static parse(reader) {
     return new Promise((resolve, reject) => {
       if (reader.length < TCP.HEADER_LEN_MIN) {
@@ -29,7 +36,7 @@ export default class TCP {
           window_size, checksum, urgent_ptr, options
         },
         next: {
-          protocol: null,
+          protocol: TCP.lookUpProtocol([source, destination]),
           payload:  payload
         }
       });
@@ -42,5 +49,11 @@ export default class TCP {
       psh: +!!(bits & 0x08), rst: +!!(bits & 0x04),
       syn: +!!(bits & 0x02), fin: +!!(bits & 0x01)
     };
+  }
+
+  static lookUpProtocol(ports) {
+    return TCP.WELL_KNOWN_PORTS.get(ports[0])
+        || TCP.WELL_KNOWN_PORTS.get(ports[1])
+        || null;
   }
 }

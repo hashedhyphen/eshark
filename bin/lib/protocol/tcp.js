@@ -39,7 +39,7 @@ var TCP = (function () {
             window_size: window_size, checksum: checksum, urgent_ptr: urgent_ptr, options: options
           },
           next: {
-            protocol: null,
+            protocol: TCP.lookUpProtocol([source, destination]),
             payload: payload
           }
         });
@@ -55,9 +55,19 @@ var TCP = (function () {
       };
     }
   }, {
+    key: 'lookUpProtocol',
+    value: function lookUpProtocol(ports) {
+      return TCP.WELL_KNOWN_PORTS.get(ports[0]) || TCP.WELL_KNOWN_PORTS.get(ports[1]) || null;
+    }
+  }, {
     key: 'HEADER_LEN_MIN',
     get: function get() {
       return 20;
+    }
+  }, {
+    key: 'WELL_KNOWN_PORTS',
+    get: function get() {
+      return new Map([[80, 'HTTP'], [443, 'HTTPS']]);
     }
   }]);
 
